@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration - GAINZ LOOP</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    nav {
+      background: #0f172a;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    nav .logo img {
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+    }
+
+    nav .logo span {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    /* Container */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Form card */
+    .form-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .form-box h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #0f172a;
+    }
+
+    /* Grid layout for inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: #0f172a;
+      font-size: 0.9rem;
+    }
+
+    .input-group input,
+    .input-group textarea,
+    .input-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      outline: none;
+      font-size: 1rem;
+      transition: border 0.3s;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus,
+    .input-group select:focus {
+      border-color: #0f172a;
+    }
+
+    .input-group textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    /* Make textarea full width */
+    .form-grid .textarea-group {
+      grid-column: span 2;
+    }
+
+    /* Submit buttons */
+    .form-box .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .form-box button {
+      flex: 1;
+      max-width: 200px;
+      padding: 0.9rem;
+      background: #e67e22;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .form-box button:hover {
+      background: #f39c12;
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-grid .textarea-group {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <img src="logo.png" alt="Logo">
+      <span>GAINZ LOOP</span>
+    </div>
+  </nav>
+
+  <!-- Registration Form -->
+  <div class="container">
+    <div class="form-box">
+      <h2>Student Registration</h2>
+      <form id="regForm">
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter a strong password" required>
+          </div>
+
+          <div class="input-group">
+            <label for="skills">Skills</label>
+            <input type="text" id="skills" placeholder="Your key skills" required>
+          </div>
+
+          <div class="input-group">
+            <label for="course">Select Course</label>
+            <select id="course" required>
+              <option value="">-- Choose a Course --</option>
+              <option value="powerbi">TECHNICAL COURSES</option>
+              <option value="javascript">CORPORATE COURSES</option>
+              <option value="both">TECHNICAL + CORPORATE </option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="resume">Resume Link</label>
+            <input type="url" id="resume" placeholder="Paste your resume link" required>
+          </div>
+
+          <div class="input-group textarea-group">
+            <label for="info">Additional Info</label>
+            <textarea id="info" placeholder="Write something about yourself (optional)..."></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="register">Register</button>
+          <button type="button" id="back" onclick="window.location.href='login.html';">Back</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  var form = document.getElementById("regForm");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    // Collect values
+    var fullname = document.getElementById("fullname").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var password = document.getElementById("password").value.trim();
+    var skills = document.getElementById("skills").value.trim();
+    var course = document.getElementById("course").value.trim();
+    var resume = document.getElementById("resume").value.trim();
+    var info = document.getElementById("info").value.trim(); // optional
+
+    // Password validation: at least 6 chars and 1 special character
+    var specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (password.length < 6 || !specialCharRegex.test(password)) {
+      alert("⚠️ Password must be at least 6 characters long and include at least one special character.");
+      return;
+    }
+
+    // Check mandatory fields
+    if (fullname && email && password && skills && course && resume) {
+      alert("✅ You have Successfully Registered!");
+      form.reset();
+      // Redirect to login.html after alert
+      window.location.href = "login.html";
+    } else {
+      alert("⚠️ Please fill in all required details before submitting!");
+    }
+  });
+</script>
+
+</body>
+</html>

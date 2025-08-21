@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    nav {
+      background: #0f172a;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    nav .logo img {
+      width: 53px;
+      height: 40px;
+      margin-right: 8px;
+    }
+
+    nav .buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    nav .buttons button {
+      background: #e67e22 ;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav .buttons button:hover {
+      background: #f39c12;
+    }
+
+    /* Login Form */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #0f172a;
+    }
+
+    .login-box .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .login-box label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .login-box input:focus {
+      border-color: #38bdf8;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 0.9rem;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-box button:hover {
+      background: #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <img src="logo.png" alt="GAINZ LOOP Logo" style="height:40px; vertical-align:middle; margin-right:10px;">
+      <span>GAINZ LOOP</span>
+    </div>
+    <div class="buttons">
+      <button onclick="register()" href="registration.html">Register</button>
+      <button onclick="goBack()" href="welcome.html">Back</button>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <div class="container">
+    <div class="login-box">
+      <h2>Login</h2>
+      <form>
+        <div class="input-group">
+          <label for="username">Email</label>
+          <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+    <script>
+    function register() {
+      // Redirect to your register page
+      window.location.href = "registration.html";
+    }
+
+    function logout() {
+      alert("You have been logged out.");
+      // You can add logout logic here if needed
+    }
+
+    function goBack() {
+      window.location.href="index1.html";
+    }
+
+
+  </script>
+</body>
+</html>
