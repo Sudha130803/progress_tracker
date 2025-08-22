@@ -47,16 +47,32 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    conn = psycopg2.connect(database="your_db", user="your_user", password="your_password", host="localhost", port="5432")
-    cursor = conn.cursor()
+    try:
+        conn = psycopg2.connect(
+            database="progress",
+            user="postgres",
+            password="2003",
+            host="localhost",
+            port="5432"
+        )
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT password, course FROM students WHERE email = %s", (email,))
-    user = cursor.fetchone()
+        cursor.execute("SELECT password, course FROM students WHERE email = %s", (email,))
+        user = cursor.fetchone()
 
-    if user and user[0] == password:  # (use bcrypt.check_password_hash(user[0], password) if you added bcrypt)
-        return jsonify({"message": "Login successful!", "course": user[1]})
-    else:
-        return jsonify({"error": "Invalid email or password"}), 401
+        if user and bcrypt.check_password_hash(user[0], password):
+            return jsonify({"message": "Login successful!", "course": user[1]})
+        else:
+            return jsonify({"error": "Invalid email or password"}), 401
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
