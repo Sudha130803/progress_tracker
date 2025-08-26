@@ -183,8 +183,18 @@
         .then(result => {
           if (result.message) {
             alert(result.message + " | Course: " + result.course);
+            
             // Redirect to dashboard or homepage
-            window.location.href = "Afterlogin.html";
+            if (result.course.toLowerCase() === "technical") {
+              window.location.href = "SCREEN 4.html";
+            } else if (result.course.toLowerCase() === "corporate"){
+              window.location.href = "SCREEN 5.html";
+            } else if (result.course.toLowerCase() === "both"){
+              window.location.href = "SCREEN 6.html";
+            } else {
+              alert ("Unknown course:"+ result.course);
+            }
+
           } else {
             alert(result.error);
           }
