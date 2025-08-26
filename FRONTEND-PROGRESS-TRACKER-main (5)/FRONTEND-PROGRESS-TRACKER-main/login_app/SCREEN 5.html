@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GAINZ LOOP — Progress Dashboard</title>
+  <style>
+    /* ===== General Styling ===== */
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #0a1f44, #1f3c88);
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    header button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .mark-btn { background: #f76c6c; color: white; }
+    .mark-btn:hover { background: #d9534f; }
+    .reset-btn { background: #ff9933; color: white; }
+    .reset-btn:hover { background: #e67e22; }
+
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    /* ===== Stats Cards ===== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #1f3c88;
+    }
+    .card p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* ===== Section Box ===== */
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+    .section h3 {
+      margin-top: 0;
+      color: #0a1f44;
+      border-left: 4px solid #4cafef;
+      padding-left: 10px;
+    }
+
+    /* ===== Progress Bar ===== */
+    .progress-bar {
+      background: #e6e6e6;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #4cafef, #0077b6);
+      height: 12px;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .next-box {
+      margin-top: 15px;
+    }
+    .next-box p {
+      margin: 6px 0;
+    }
+    .highlight { font-weight: bold; color: #1f3c88; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GAINZ LOOP — Corporate Dashboard</h1>
+    <div>
+      <button class="mark-btn" onclick="markNext()">✔ Mark Next Module</button>
+      <button class="reset-btn" onclick="resetData()">🔄 Reset Data</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Stats Cards -->
+    <div class="stats">
+      <div class="card">
+        <h2 id="totalCourses">1</h2>
+        <p>Total Course Category</p>
+      </div>
+      <div class="card">
+        <h2 id="overallProgress">0%</h2>
+        <p>Overall Progress</p>
+      </div>
+      <div class="card">
+        <h2 id="completedModules">0</h2>
+        <p>Completed Modules</p>
+      </div>
+      <div class="card">
+        <h2 id="lastActivity">--</h2>
+        <p>Last Activity</p>
+      </div>
+    </div>
+
+    <!-- Corporate Section -->
+    <div class="section">
+      <h3>Corporate Courses Offered</h3>
+      <p><strong>Progress:</strong> <span id="corpCompleted">0</span>/<span id="corpTotal">0</span></p>
+      <div class="progress-bar"><div class="progress-fill" id="corpFill"></div></div>
+      <div class="next-box">
+        <p><strong>Next Up:</strong> <span class="highlight" id="corpNext">--</span></p>
+        <p><strong>Recent Activity:</strong> <span id="corpRecent">--</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Corporate Modules =====
+    const corporateModules = [
+      "Business Analytics with Python & Excel",
+      "FinTech & Blockchain Applications in Finance",
+      "AI for Business Decision Making",
+      "E-Commerce Business Setup & Automation",
+      "Stock Market & Algo Trading using Python",
+      "International Business Compliance & Digital Exporting",
+      "Advanced Excel with Data Visualization",
+      "ERP Systems (SAP/Oracle) for Business Operations",
+      "Digital Branding & Business Influence",
+      "CRM & Sales Automation Tools (Zoho, HubSpot)",
+      "Taxation Tech: GST, TDS with AI-based Filing Tools",
+      "Financial Modelling with AI Forecasting",
+      "Cloud-based Accounting & ERP Tools",
+      "Business Intelligence (BI) for Strategic Planning",
+      "Sustainability & ESG Reporting Tools in Business"
+    ];
+
+    // ===== Progress State =====
+    let progress = JSON.parse(localStorage.getItem("corpProgress")) || {
+      completed: 0,
+      recent: [],
+      last: "--"
+    };
+
+    // ===== Update Dashboard =====
+    function updateDashboard() {
+      const total = corporateModules.length;
+      const completed = progress.completed;
+
+      document.getElementById("overallProgress").innerText = Math.round((completed / total) * 100) + "%";
+      document.getElementById("completedModules").innerText = `${completed} of ${total}`;
+      document.getElementById("lastActivity").innerText = progress.last;
+
+      document.getElementById("corpTotal").innerText = total;
+      document.getElementById("corpCompleted").innerText = completed;
+      document.getElementById("corpFill").style.width = (completed / total) * 100 + "%";
+      document.getElementById("corpNext").innerText =
+        completed < total ? corporateModules[completed] : "All Done 🎉";
+      document.getElementById("corpRecent").innerText =
+        progress.recent.length > 0 ? progress.recent.join(", ") : "--";
+
+      localStorage.setItem("corpProgress", JSON.stringify(progress));
+    }
+
+    // ===== Mark Next Module =====
+    function markNext() {
+      if (progress.completed < corporateModules.length) {
+        const moduleName = corporateModules[progress.completed];
+        progress.completed++;
+        progress.last = moduleName;
+        progress.recent.unshift(moduleName);
+        if (progress.recent.length > 5) progress.recent.pop();
+        updateDashboard();
+      } else {
+        alert("All corporate modules are already completed!");
+      }
+    }
+
+    // ===== Reset =====
+    function resetData() {
+      progress = { completed: 0, recent: [], last: "--" };
+      updateDashboard();
+    }
+
+    // Init
+    updateDashboard();
+  </script>
+</body>
+</html>
