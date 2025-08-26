@@ -76,15 +76,15 @@
       color: #666;
     }
 
-    /* ===== Section Boxes ===== */
-    .courses, .next {
+    /* ===== Section Box ===== */
+    .section {
       background: white;
       border-radius: 12px;
       padding: 25px;
       box-shadow: 0 5px 12px rgba(0,0,0,0.1);
       margin-bottom: 25px;
     }
-    .courses h3, .next h3 {
+    .section h3 {
       margin-top: 0;
       color: #0a1f44;
       border-left: 4px solid #4cafef;
@@ -105,23 +105,20 @@
       transition: width 0.4s ease-in-out;
     }
 
-    /* ===== Next Section ===== */
-    #nextUp {
-      font-weight: bold;
-      font-size: 16px;
-      color: #1f3c88;
+    .next-box {
+      margin-top: 15px;
     }
-    #recentActivity {
-      font-style: italic;
-      color: #444;
+    .next-box p {
+      margin: 6px 0;
     }
+    .highlight { font-weight: bold; color: #1f3c88; }
   </style>
 </head>
 <body>
   <header>
-    <h1>GAINZ LOOP — Progress Dashboard</h1>
+    <h1>GAINZ LOOP — Corporate Dashboard</h1>
     <div>
-      <button class="mark-btn" onclick="markNextModule()">✔ Mark Next Module</button>
+      <button class="mark-btn" onclick="markNext()">✔ Mark Next Module</button>
       <button class="reset-btn" onclick="resetData()">🔄 Reset Data</button>
     </div>
   </header>
@@ -130,8 +127,8 @@
     <!-- Stats Cards -->
     <div class="stats">
       <div class="card">
-        <h2 id="totalCourses">0</h2>
-        <p>Total Courses</p>
+        <h2 id="totalCourses">1</h2>
+        <p>Total Course Category</p>
       </div>
       <div class="card">
         <h2 id="overallProgress">0%</h2>
@@ -147,105 +144,86 @@
       </div>
     </div>
 
-    <!-- Courses -->
-    <div class="courses">
-      <h3>Your Courses</h3>
-      <p><strong>Technical</strong> (<span id="completedCount">0</span>/<span id="totalModules">0</span>)</p>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+    <!-- Corporate Section -->
+    <div class="section">
+      <h3>Corporate Courses Offered</h3>
+      <p><strong>Progress:</strong> <span id="corpCompleted">0</span>/<span id="corpTotal">0</span></p>
+      <div class="progress-bar"><div class="progress-fill" id="corpFill"></div></div>
+      <div class="next-box">
+        <p><strong>Next Up:</strong> <span class="highlight" id="corpNext">--</span></p>
+        <p><strong>Recent Activity:</strong> <span id="corpRecent">--</span></p>
       </div>
-    </div>
-
-    <!-- Next Section -->
-    <div class="next">
-      <h3>Next Up</h3>
-      <p id="nextUp">--</p>
-      <h3>Recent Activity</h3>
-      <p id="recentActivity">--</p>
     </div>
   </div>
 
   <script>
-    // Your Modules
-    const courseData = {
-      name: "Technical",
-      modules: [
-        "Advanced Python",
-        "Full Stack Web Development",
-        "Data Science",
-        "Artificial Intelligence Tools",
-        "Python with Power BI",
-        "Machine Learning",
-        "Cloud Computing",
-        "AR/VR",
-        "UI/UX",
-        "Digital Marketing",
-        "Human Resource Management",
-        "Finance & Tally",
-        "Salesforce",
-        "Data Analysis (Excel, SPSS, Tableau, PowerBI)",
-        "Medical Coding"
-      ]
-    };
+    // ===== Corporate Modules =====
+    const corporateModules = [
+      "Business Analytics with Python & Excel",
+      "FinTech & Blockchain Applications in Finance",
+      "AI for Business Decision Making",
+      "E-Commerce Business Setup & Automation",
+      "Stock Market & Algo Trading using Python",
+      "International Business Compliance & Digital Exporting",
+      "Advanced Excel with Data Visualization",
+      "ERP Systems (SAP/Oracle) for Business Operations",
+      "Digital Branding & Business Influence",
+      "CRM & Sales Automation Tools (Zoho, HubSpot)",
+      "Taxation Tech: GST, TDS with AI-based Filing Tools",
+      "Financial Modelling with AI Forecasting",
+      "Cloud-based Accounting & ERP Tools",
+      "Business Intelligence (BI) for Strategic Planning",
+      "Sustainability & ESG Reporting Tools in Business"
+    ];
 
-    // Load saved progress or start fresh
-    let progress = JSON.parse(localStorage.getItem("progressData")) || {
+    // ===== Progress State =====
+    let progress = JSON.parse(localStorage.getItem("corpProgress")) || {
       completed: 0,
-      lastActivity: "--",
-      recentActivity: []
+      recent: [],
+      last: "--"
     };
 
+    // ===== Update Dashboard =====
     function updateDashboard() {
-      const totalModules = courseData.modules.length;
+      const total = corporateModules.length;
       const completed = progress.completed;
 
-      document.getElementById("totalCourses").innerText = "1";
-      document.getElementById("totalModules").innerText = totalModules;
-      document.getElementById("completedCount").innerText = completed;
+      document.getElementById("overallProgress").innerText = Math.round((completed / total) * 100) + "%";
+      document.getElementById("completedModules").innerText = `${completed} of ${total}`;
+      document.getElementById("lastActivity").innerText = progress.last;
 
-      const percent = Math.round((completed / totalModules) * 100);
-      document.getElementById("overallProgress").innerText = percent + "%";
-      document.getElementById("completedModules").innerText = `${completed} of ${totalModules}`;
-      document.getElementById("lastActivity").innerText = progress.lastActivity;
+      document.getElementById("corpTotal").innerText = total;
+      document.getElementById("corpCompleted").innerText = completed;
+      document.getElementById("corpFill").style.width = (completed / total) * 100 + "%";
+      document.getElementById("corpNext").innerText =
+        completed < total ? corporateModules[completed] : "All Done 🎉";
+      document.getElementById("corpRecent").innerText =
+        progress.recent.length > 0 ? progress.recent.join(", ") : "--";
 
-      document.getElementById("progressFill").style.width = percent + "%";
-
-      // Next module
-      if (completed < totalModules) {
-        document.getElementById("nextUp").innerText = courseData.modules[completed];
-      } else {
-        document.getElementById("nextUp").innerText = "All modules completed 🎉";
-      }
-
-      // Recent activity
-      document.getElementById("recentActivity").innerText =
-        progress.recentActivity.length > 0
-          ? progress.recentActivity.join(", ")
-          : "--";
-
-      // Save to localStorage
-      localStorage.setItem("progressData", JSON.stringify(progress));
+      localStorage.setItem("corpProgress", JSON.stringify(progress));
     }
 
-    function markNextModule() {
-      if (progress.completed < courseData.modules.length) {
-        const moduleName = courseData.modules[progress.completed];
+    // ===== Mark Next Module =====
+    function markNext() {
+      if (progress.completed < corporateModules.length) {
+        const moduleName = corporateModules[progress.completed];
         progress.completed++;
-        progress.lastActivity = moduleName;
-        progress.recentActivity.unshift(moduleName);
-        if (progress.recentActivity.length > 5) progress.recentActivity.pop();
+        progress.last = moduleName;
+        progress.recent.unshift(moduleName);
+        if (progress.recent.length > 5) progress.recent.pop();
         updateDashboard();
       } else {
-        alert("All modules are already completed!");
+        alert("All corporate modules are already completed!");
       }
     }
 
+    // ===== Reset =====
     function resetData() {
-      progress = { completed: 0, lastActivity: "--", recentActivity: [] };
+      progress = { completed: 0, recent: [], last: "--" };
       updateDashboard();
     }
 
-    // Initialize dashboard
+    // Init
     updateDashboard();
   </script>
 </body>

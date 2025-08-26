@@ -1,490 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Progress Tracker • Dashboard</title>
-    <style>
-        :root{
-            --bg: #0d1117;
-            --panel: #161b22;
-            --text: #c9d1d9;
-            --muted: #8b949e;
-            --brand: #58a6ff;
-            --brand-2: #38c47f;
-            --accent: #a371f7;
-            --border: rgba(255, 255, 255, .15);
-            --radius: 16px;
-            --shadow: 0 10px 30px rgba(0,0,0,.3);
-            --gradient: linear-gradient(135deg, var(--brand), var(--accent));
-        }
-        *{box-sizing:border-box}
-        html,body{height:100%}
-        body{
-            margin:0;
-            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-            background: radial-gradient(1000px 500px at 10% -10%, #1a2230 0%, transparent 60%),
-                        radial-gradient(800px 400px at 100% 10%, #15202b 0%, transparent 60%),
-                        var(--bg);
-            color:var(--text);
-            letter-spacing:.2px;
-            overflow-x: hidden;
-            transition: background-color .3s;
-        }
+  <meta charset="UTF-8">
+  <title>GAINZ LOOP — Progress Dashboard</title>
+  <style>
+    /* ===== General Styling ===== */
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #0a1f44, #1f3c88);
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    header button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .mark-btn { background: #f76c6c; color: white; }
+    .mark-btn:hover { background: #d9534f; }
+    .reset-btn { background: #ff9933; color: white; }
+    .reset-btn:hover { background: #e67e22; }
 
-        /* Animations */
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(88,166,255,.4)}70%{box-shadow:0 0 0 10px rgba(88,166,255,0)}100%{box-shadow:0 0 0 0 rgba(88,166,255,0)}}
-        
-        /* Layout */
-        .container{
-            max-width:1180px;
-            margin:24px auto 48px;
-            padding:0 16px;
-            animation: fadeIn .8s ease-out;
-        }
-        header{
-            display:flex;align-items:center;justify-content:space-between;
-            gap:16px;margin-bottom:16px;
-        }
-        .brand{display:flex;align-items:center;gap:14px;min-width:0}
-        .logo{
-            width:46px;height:46px;border-radius:12px;
-            background: var(--gradient);
-            display:grid;place-items:center;color:white;font-weight:800;
-            box-shadow: var(--shadow);
-            flex:0 0 46px;
-            animation: pulse 2s infinite;
-        }
-        .title h1{margin:0;font-size:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .title p{margin:2px 0 0;color:var(--muted);font-size:14px}
-        .actions{display:flex;gap:10px;flex-wrap:wrap}
-        .btn{
-            padding:10px 14px;border:1px solid var(--border);
-            background:linear-gradient(180deg,#1f2835,#161b22);
-            color:var(--text);border-radius:12px;cursor:pointer;font-weight:600;
-            transition:.15s transform, .15s border-color, .3s background-color;
-            position:relative; overflow:hidden;
-        }
-        .btn:hover{transform:translateY(-2px);border-color:#30435f}
-        .btn:active{transform:translateY(0)}
-        .btn::before{
-            content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-            background:rgba(255,255,255,.1);transition:left .3s;
-        }
-        .btn:hover::before{left:0}
-        .btn.success{background:linear-gradient(135deg, var(--brand-2), #1f9e5c); border:none}
-        .btn.primary{background:var(--gradient); border:none}
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
 
-        /* Banner */
-        .banner{
-            border:1px solid var(--border);
-            background: linear-gradient(180deg, #1f2835, #161b22);
-            padding:14px 16px;border-radius:14px;margin:12px 0 18px;
-            display:flex;align-items:center;gap:12px;justify-content:space-between;
-        }
-        .badge{
-            font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
-            padding:6px 8px;border-radius:8px;background:#202b36;color:#9ec2ff;border:1px solid #2f3a4b;
-        }
-        .banner-main{display:flex;align-items:center;gap:12px;min-width:0}
-        .banner-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ===== Stats Cards ===== */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #1f3c88;
+    }
+    .card p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: #666;
+    }
 
-        /* KPIs */
-        .kpis{
-            display:grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
-            gap:14px;margin:16px 0 22px;
-        }
-        .card{
-            background:linear-gradient(180deg,#1b2531,#121a24);
-            border:1px solid var(--border);border-radius:var(--radius);
-            padding:16px; box-shadow:var(--shadow);
-            display:flex;flex-direction:column;gap:6px;min-height:110px;
-            transition:transform .2s;
-        }
-        .card:hover{transform:translateY(-4px)}
-        .card h3{margin:0;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.3px}
-        .big{font-size:26px;font-weight:800;margin:2px 0}
-        .hint{font-size:12px;color:var(--muted)}
+    /* ===== Section Boxes ===== */
+    .courses, .next {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+    .courses h3, .next h3 {
+      margin-top: 0;
+      color: #0a1f44;
+      border-left: 4px solid #4cafef;
+      padding-left: 10px;
+    }
 
-        /* Main grid */
-        .grid{
-            display:grid;grid-template-columns: 1.45fr .85fr;gap:16px;
-        }
-        .panel{
-            background:linear-gradient(180deg,#1b2531,#121a24);
-            border:1px solid var(--border);border-radius:var(--radius);
-            padding:16px;box-shadow:var(--shadow);
-            min-width:0;
-        }
-        .panel h2{margin:0 0 10px;font-size:18px}
-        .muted{color:var(--muted);font-size:14px;margin:6px 0 12px}
+    /* ===== Progress Bar ===== */
+    .progress-bar {
+      background: #e6e6e6;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #4cafef, #0077b6);
+      height: 12px;
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
 
-        /* Courses */
-        .list{display:grid;gap:10px}
-        .course{
-            display:flex;gap:14px; align-items:center;
-            padding:12px;border-radius:12px;border:1px solid var(--border);
-            background:linear-gradient(180deg,#1f2835,#161b22);
-            transition:transform .2s, box-shadow .2s;
-        }
-        .course:hover{transform:scale(1.02);box-shadow:0 8px 20px rgba(0,0,0,.4)}
-        .course .icon{
-            width:42px;height:42px;border-radius:12px;flex:0 0 42px;
-            display:grid;place-items:center;font-weight:800;
-            color:var(--brand);border:1px solid rgba(88,166,255,.2);
-            background:linear-gradient(135deg, rgba(88,166,255,.1), rgba(163,113,247,.1));
-        }
-        .course-main{flex:1;min-width:0}
-        .course-row{display:flex;align-items:center;gap:10px;min-width:0}
-        .course-title{font-weight:700;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .course-meta{color:var(--muted);font-size:13px;margin-left:auto;white-space:nowrap}
-        .progress{
-            width:100%;height:10px;border:1px solid #1c2c4d;background:#0a1326;
-            border-radius:999px;overflow:hidden;margin-top:8px;
-        }
-        .bar{
-            height:100%;width:0%;
-            background:linear-gradient(90deg, var(--brand), var(--accent), var(--brand-2));
-            transition:width .5s ease;
-        }
-        .course-foot{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
-        .pct{font-size:12px;color:var(--muted)}
-        .course .btn{padding:8px 10px}
-
-        /* Activity list */
-        .list-item{
-            border:1px solid var(--border); border-radius:12px; padding:10px 12px;
-            background:linear-gradient(180deg,#1f2835,#161b22);
-            display:flex;justify-content:space-between;gap:8px; align-items:center;
-            transition:transform .2s;
-        }
-        .list-item:hover{transform:translateX(5px)}
-        .tag{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid #2f3a4b;background:#202b36;color:#9ec2ff}
-        .time{color:var(--muted);font-size:12px}
-
-        /* Toast */
-        .toast{
-            position:fixed; right:16px; bottom:16px; z-index:9999;
-            padding:14px 16px; border-radius:12px; border:1px solid var(--border);
-            background:linear-gradient(135deg,#1f2835,#161b22); box-shadow:var(--shadow);
-            display:none; min-width:260px;
-        }
-        .toast.show{display:block; animation: pop .18s ease}
-        @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
-
-        /* Responsive */
-        @media (max-width: 980px){
-            .grid{grid-template-columns:1fr}
-        }
-        @media (max-width: 620px){
-            header{flex-direction:column;align-items:flex-start;gap:10px}
-            .actions{width:100%}.btn{flex:1}
-            .banner{flex-direction:column;align-items:flex-start;gap:8px}
-            .banner-main{width:100%}
-            .kpis{gap:10px}
-        }
-    </style>
+    /* ===== Next Section ===== */
+    #nextUp {
+      font-weight: bold;
+      font-size: 16px;
+      color: #1f3c88;
+    }
+    #recentActivity {
+      font-style: italic;
+      color: #444;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="brand">
-                <div class="logo">GL</div>
-                <div class="title">
-                    <h1>GAINZ LOOP — Progress Dashboard</h1>
-                    <p>Track your learning journey across courses.</p>
-                </div>
-            </div>
-            <div class="actions">
-                <button id="btn-mark-next" class="btn success">Mark Next Module Completed</button>
-                <button id="btn-reset" class="btn">Reset Demo Data</button>
-            </div>
-        </header>
+  <header>
+    <h1>GAINZ LOOP — Progress Dashboard</h1>
+    <div>
+      <button class="mark-btn" onclick="markNextModule()">✔ Mark Next Module</button>
+      <button class="reset-btn" onclick="resetData()">🔄 Reset Data</button>
+    </div>
+  </header>
 
-        <div id="banner" class="banner" role="status" aria-live="polite">
-            <div class="banner-main">
-                <span class="badge">Notification</span>
-                <div id="banner-text" class="banner-text">Welcome back! Keep your progress going!</div>
-            </div>
-        </div>
-
-        <section class="kpis" aria-label="Summary">
-            <div class="card"><h3>Total Courses</h3><div id="kpi-courses" class="big">—</div><div class="hint" id="kpi-courses-trend"></div></div>
-            <div class="card"><h3>Overall Progress</h3><div id="kpi-overall" class="big">—%</div><div class="hint">Average across all courses</div></div>
-            <div class="card"><h3>Completed Modules</h3><div id="kpi-completed" class="big">—</div><div class="hint" id="kpi-totalmod">of — total</div></div>
-            <div class="card"><h3>Last Activity</h3><div id="kpi-last" class="big">—</div><div class="hint">Most recent action</div></div>
-            <div class="card"><h3>Estimated Time Left</h3><div id="kpi-timeleft" class="big">—</div><div class="hint">Based on your pace</div></div>
-        </section>
-
-        <div class="grid">
-            <section class="panel" aria-label="Your Courses">
-                <h2>Your Courses</h2>
-                <p class="muted">Completed vs total modules, percentage, and next module suggestion.</p>
-                <div id="courses" class="list"></div>
-            </section>
-
-            <aside class="panel" aria-label="Next Up">
-                <h2>Next Up</h2>
-                <p id="next-up" class="muted">We’ll suggest your next module based on your progress.</p>
-                <h2 style="margin-top:16px;">Recent Activity</h2>
-                <div id="recent" class="list" aria-live="polite"></div>
-            </aside>
-        </div>
+  <div class="container">
+    <!-- Stats Cards -->
+    <div class="stats">
+      <div class="card">
+        <h2 id="totalCourses">0</h2>
+        <p>Total Courses</p>
+      </div>
+      <div class="card">
+        <h2 id="overallProgress">0%</h2>
+        <p>Overall Progress</p>
+      </div>
+      <div class="card">
+        <h2 id="completedModules">0</h2>
+        <p>Completed Modules</p>
+      </div>
+      <div class="card">
+        <h2 id="lastActivity">--</h2>
+        <p>Last Activity</p>
+      </div>
     </div>
 
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <!-- Courses -->
+    <div class="courses">
+      <h3>Your Courses</h3>
+      <p><strong>Technical</strong> (<span id="completedCount">0</span>/<span id="totalModules">0</span>)</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
 
-    <script>
-        /* ---------- Demo data ---------- */
-        const demoCourses = [
-            {
-                id: 'js-basics',
-                title: 'JavaScript Basics',
-                modules: [
-                    'Intro to JS','Variables & Types','Operators','Control Flow','Functions',
-                    'Arrays','Objects','DOM Basics','Events','Project: Quiz App'
-                ],
-                completed: 6, lastActivity: null
-            },
-            {
-                id: 'python-core',
-                title: 'Python Programming',
-                modules: [
-                    'Setup & Syntax','Control Flow','Functions','Collections','OOP',
-                    'File I/O','Modules & Venv','Data Visualization','Testing','Final Project'
-                ],
-                completed: 3, lastActivity: null
-            },
-            {
-                id: 'power-bi',
-                title: 'Power BI',
-                modules: [
-                    'Intro & Interface','Data Import','Data Modeling','DAX Basics','Visualizations',
-                    'Dashboards','Power Query','Publishing','Sharing','Capstone Dashboard'
-                ],
-                completed: 2, lastActivity: null
-            }
-        ];
+    <!-- Next Section -->
+    <div class="next">
+      <h3>Next Up</h3>
+      <p id="nextUp">--</p>
+      <h3>Recent Activity</h3>
+      <p id="recentActivity">--</p>
+    </div>
+  </div>
 
-        const STORAGE_STATE = 'progress_state_v2';
-        const STORAGE_LOG   = 'progress_log_v2';  // timestamps of learning actions
+  <script>
+    // Your Modules
+    const courseData = {
+      name: "Technical",
+      modules: [
+        "Advanced Python",
+        "Full Stack Web Development",
+        "Data Science",
+        "Artificial Intelligence Tools",
+        "Python with Power BI",
+        "Machine Learning",
+        "Cloud Computing",
+        "AR/VR",
+        "UI/UX",
+        "Digital Marketing",
+        "Human Resource Management",
+        "Finance & Tally",
+        "Salesforce",
+        "Data Analysis (Excel, SPSS, Tableau, PowerBI)",
+        "Medical Coding"
+      ]
+    };
 
-        function loadState(){
-            const saved = localStorage.getItem(STORAGE_STATE);
-            const savedLog = localStorage.getItem(STORAGE_LOG);
-            if(saved && savedLog){
-                try { return { state: JSON.parse(saved), log: JSON.parse(savedLog) }; } catch(e){}
-            }
-            // seed
-            const seeded = structuredClone(demoCourses).map((c,i)=>({
-                ...c, completed: Math.min(c.completed, c.modules.length),
-                lastActivity: Date.now() - (i+1)*3600*1000
-            }));
-            const log = [];
-            // create a few past actions for pace
-            const now = Date.now(), day = 24*3600*1000;
-            log.push(now - day*2); // two days ago
-            log.push(now - day);   // yesterday
-            log.push(now - 30*60*1000); // 30 mins ago
-            saveState(seeded, log);
-            return { state: seeded, log };
-        }
-        function saveState(state, log){
-            localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
-            localStorage.setItem(STORAGE_LOG, JSON.stringify(log));
-        }
+    // Load saved progress or start fresh
+    let progress = JSON.parse(localStorage.getItem("progressData")) || {
+      completed: 0,
+      lastActivity: "--",
+      recentActivity: []
+    };
 
-        let { state, log } = loadState();
+    function updateDashboard() {
+      const totalModules = courseData.modules.length;
+      const completed = progress.completed;
 
-        /* ---------- Helpers ---------- */
-        const fmtPct = (n)=> Math.round(n*100)/100;
+      document.getElementById("totalCourses").innerText = "1";
+      document.getElementById("totalModules").innerText = totalModules;
+      document.getElementById("completedCount").innerText = completed;
 
-        function overallStats(courses){
-            let total=0, done=0, last=0;
-            courses.forEach(c=>{
-                total += c.modules.length;
-                done  += Math.min(c.completed, c.modules.length);
-                last = Math.max(last, c.lastActivity||0);
-            });
-            return { total, done, overall: total? (done/total*100) : 0, last };
-        }
+      const percent = Math.round((completed / totalModules) * 100);
+      document.getElementById("overallProgress").innerText = percent + "%";
+      document.getElementById("completedModules").innerText = `${completed} of ${totalModules}`;
+      document.getElementById("lastActivity").innerText = progress.lastActivity;
 
-        function timeAgo(ts){
-            if(!ts) return '—';
-            const diff = Date.now()-ts;
-            const mins = Math.floor(diff/60000);
-            if(mins<1) return 'just now';
-            if(mins<60) return `${mins}m ago`;
-            const hrs = Math.floor(mins/60);
-            if(hrs<24) return `${hrs}h ago`;
-            const days = Math.floor(hrs/24);
-            return `${days}d ago`;
-        }
+      document.getElementById("progressFill").style.width = percent + "%";
 
-        // Estimate time left from pace (modules/day) using activity count as events
-        function estimateTimeLeft(courses, activityLog){
-            const { total, done } = overallStats(courses);
-            const remaining = total - done;
-            if(remaining <= 0) return "Completed";
-            if(activityLog.length < 2) return "—";
+      // Next module
+      if (completed < totalModules) {
+        document.getElementById("nextUp").innerText = courseData.modules[completed];
+      } else {
+        document.getElementById("nextUp").innerText = "All modules completed 🎉";
+      }
 
-            const first = Math.min(...activityLog);
-            const last  = Math.max(...activityLog);
-            const days = Math.max((last - first)/(24*3600*1000), 0.05);
-            const pace = activityLog.length / days; // actions per day
-            if(pace <= 0) return "—";
+      // Recent activity
+      document.getElementById("recentActivity").innerText =
+        progress.recentActivity.length > 0
+          ? progress.recentActivity.join(", ")
+          : "--";
 
-            const daysLeft = remaining / pace;
-            if(daysLeft < 1/24) { // < 1 hour
-                const mins = Math.round(daysLeft*24*60);
-                return `${Math.max(mins,1)} min`;
-            }
-            if(daysLeft < 1) {
-                const hrs = Math.round(daysLeft*24);
-                return `${hrs} h`;
-            }
-            const whole = Math.floor(daysLeft);
-            const hours = Math.round((daysLeft - whole)*24);
-            return `${whole}d ${hours}h`;
-        }
+      // Save to localStorage
+      localStorage.setItem("progressData", JSON.stringify(progress));
+    }
 
-        /* ---------- UI ---------- */
-        const coursesEl = document.getElementById('courses');
-        const recentEl  = document.getElementById('recent');
-        const nextUpEl  = document.getElementById('next-up');
+    function markNextModule() {
+      if (progress.completed < courseData.modules.length) {
+        const moduleName = courseData.modules[progress.completed];
+        progress.completed++;
+        progress.lastActivity = moduleName;
+        progress.recentActivity.unshift(moduleName);
+        if (progress.recentActivity.length > 5) progress.recentActivity.pop();
+        updateDashboard();
+      } else {
+        alert("All modules are already completed!");
+      }
+    }
 
-        function render(){
-            const k = overallStats(state);
-            document.getElementById('kpi-courses').textContent = state.length;
-            document.getElementById('kpi-overall').textContent = `${fmtPct(k.overall)}%`;
-            document.getElementById('kpi-completed').textContent = k.done;
-            document.getElementById('kpi-totalmod').textContent = `of ${k.total} total`;
-            document.getElementById('kpi-last').textContent = timeAgo(k.last);
-            document.getElementById('kpi-courses-trend').textContent = k.overall >= 50 ? 'Nice! Over halfway average.' : 'You’re warming up.';
+    function resetData() {
+      progress = { completed: 0, lastActivity: "--", recentActivity: [] };
+      updateDashboard();
+    }
 
-            const eta = estimateTimeLeft(state, log);
-            document.getElementById('kpi-timeleft').textContent = eta;
-
-            // Courses
-            coursesEl.innerHTML = '';
-            state.forEach(c=>{
-                const pct = Math.min(c.completed, c.modules.length)/c.modules.length*100;
-                const nextIndex = Math.min(c.completed, c.modules.length-1);
-                const nextTitle = c.completed >= c.modules.length ? 'All modules completed' : c.modules[nextIndex];
-
-                const wrap = document.createElement('div');
-                wrap.className = 'course';
-                wrap.innerHTML = `
-                    <div class="icon">${c.title.split(' ').map(w=>w[0]).join('').slice(0,3)}</div>
-                    <div class="course-main">
-                        <div class="course-row">
-                            <h3 class="course-title" title="${c.title}">${c.title}</h3>
-                            <div class="course-meta"><strong>${c.completed}</strong>/<span>${c.modules.length}</span> modules</div>
-                        </div>
-                        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}">
-                            <div class="bar" style="width:${pct}%"></div>
-                        </div>
-                        <div class="course-foot">
-                            <div class="pct">${Math.round(pct)}% • Next: <em>${nextTitle}</em></div>
-                        </div>
-                    </div>
-                    <div>
-                        <button class="btn" data-action="complete" data-id="${c.id}" ${c.completed>=c.modules.length?'disabled':''}>Complete next</button>
-                    </div>
-                `;
-                coursesEl.appendChild(wrap);
-            });
-
-            // Recent activity (last 4 events by course recency)
-            const recent = [...state].sort((a,b)=>(b.lastActivity||0)-(a.lastActivity||0)).slice(0,4);
-            recentEl.innerHTML = '';
-            recent.forEach(c=>{
-                const pct = Math.round(Math.min(c.completed, c.modules.length)/c.modules.length*100);
-                const li = document.createElement('div');
-                li.className='list-item';
-                li.innerHTML = `
-                    <div>
-                        <div style="font-weight:700">${c.title}</div>
-                        <div class="time">Updated ${timeAgo(c.lastActivity)}</div>
-                    </div>
-                    <span class="tag">${pct}%</span>
-                `;
-                recentEl.appendChild(li);
-            });
-
-            // Next up: lowest completion percentage
-            const candidate = [...state]
-                .map(c=>({c, pct: Math.min(c.completed, c.modules.length)/c.modules.length}))
-                .filter(x=>x.pct<1).sort((a,b)=>a.pct-b.pct)[0];
-            nextUpEl.textContent = candidate
-                ? `${candidate.c.title}: ${candidate.c.modules[Math.min(candidate.c.completed, candidate.c.modules.length-1)]}`
-                : 'You’ve completed everything. Great job! 🎉';
-        }
-
-        /* ---------- Notifications ---------- */
-        const bannerText = document.getElementById('banner-text');
-        const toast = document.getElementById('toast');
-        function showBanner(msg){ bannerText.textContent = msg; }
-        function showToast(msg){
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(()=> toast.classList.remove('show'), 2600);
-        }
-        function checkMilestones(prevOverall, nextOverall){
-            const thresholds = [25,50,75,100];
-            const crossed = thresholds.find(t => prevOverall < t && nextOverall >= t);
-            if(crossed){
-                showToast(`Milestone reached: ${crossed}% overall`);
-                showBanner(crossed===100 ? 'You finished all modules — amazing! 🏆' : `You’ve completed ${crossed}% – keep going! 💪`);
-            }
-        }
-
-        /* ---------- Actions ---------- */
-        document.addEventListener('click', (e)=>{
-            const btn = e.target.closest('button[data-action="complete"]');
-            if(!btn) return;
-            const id = btn.getAttribute('data-id');
-            const course = state.find(x=>x.id===id);
-            if(!course) return;
-
-            const prevOverall = overallStats(state).overall;
-
-            if(course.completed < course.modules.length){
-                course.completed += 1;
-                const ts = Date.now();
-                course.lastActivity = ts;
-                log.push(ts);            // record activity for pace
-                saveState(state, log);
-                render();
-                checkMilestones(prevOverall, overallStats(state).overall);
-                const justDone = course.modules[course.completed-1];
-                showToast(`Marked complete: ${course.title} • ${justDone}`);
-            }
-        });
-
-        document.getElementById('btn-mark-next').addEventListener('click', ()=>{
-            const candidate = [...state]
-                .map(c=>({c, pct: Math.min(c.completed, c.modules.length)/c.modules.length}))
-                .filter(x=>x.pct<1).sort((a,b)=>a.pct-b.pct)[0];
-            if(!candidate) return showToast('All done already! 🎉');
-            const id = candidate.c.id;
-            document.querySelector(`button[data-id="${id}"]`)?.click();
-        });
-
-        document.getElementById('btn-reset').addEventListener('click', ()=>{
-            localStorage.removeItem(STORAGE_STATE);
-            localStorage.removeItem(STORAGE_LOG);
-            ({ state, log } = loadState());
-            render();
-            showToast('Demo data reset');
-            showBanner('Welcome back! Keep your progress going!');
-        });
-
-        // Initial render + gentle nudge
-        render();
-        setTimeout(()=> showToast('Tip: Click “Complete next” to see progress & ETA update'), 800);
-    </script>
+    // Initialize dashboard
+    updateDashboard();
+  </script>
 </body>
 </html>
