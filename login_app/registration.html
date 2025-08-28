@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Registration - GAINZ LOOP</title>
   <style>
-    /* Reset */
     * {
       margin: 0;
       padding: 0;
@@ -78,15 +77,18 @@
       gap: 1.2rem;
     }
 
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
     .input-group label {
-      display: block;
       margin-bottom: 0.4rem;
       color: #0f172a;
       font-size: 0.9rem;
     }
 
     .input-group input,
-    .input-group textarea,
     .input-group select {
       width: 100%;
       padding: 0.8rem;
@@ -98,22 +100,16 @@
     }
 
     .input-group input:focus,
-    .input-group textarea:focus,
     .input-group select:focus {
       border-color: #0f172a;
     }
 
-    .input-group textarea {
-      resize: none;
-      height: 80px;
-    }
-
-    /* Make textarea full width */
-    .form-grid .textarea-group {
+    /* Make Select Course full width */
+    .form-grid .full-width {
       grid-column: span 2;
     }
 
-    /* Submit buttons */
+    /* Buttons */
     .form-box .actions {
       margin-top: 1.5rem;
       display: flex;
@@ -143,7 +139,7 @@
       .form-grid {
         grid-template-columns: 1fr;
       }
-      .form-grid .textarea-group {
+      .form-grid .full-width {
         grid-column: span 1;
       }
     }
@@ -184,24 +180,15 @@
             <input type="text" id="skills" placeholder="Your key skills" required>
           </div>
 
-          <div class="input-group">
+          <!-- Select Course in center (full width) -->
+          <div class="input-group full-width">
             <label for="course">Select Course</label>
             <select id="course" required>
               <option value="">-- Choose a Course --</option>
               <option value="technical">TECHNICAL COURSES</option>
               <option value="corporate">CORPORATE COURSES</option>
-              <option value="both">TECHNICAL + CORPORATE </option>
+              <option value="both">TECHNICAL + CORPORATE</option>
             </select>
-          </div>
-
-          <div class="input-group">
-            <label for="resume">Resume Link</label>
-            <input type="url" id="resume" placeholder="Paste your resume link" required>
-          </div>
-
-          <div class="input-group textarea-group">
-            <label for="info">Additional Info</label>
-            <textarea id="info" placeholder="Write something about yourself (optional)..."></textarea>
           </div>
         </div>
 
@@ -225,36 +212,20 @@
     var password = document.getElementById("password").value.trim();
     var skills = document.getElementById("skills").value.trim();
     var course = document.getElementById("course").value.trim();
-    var resume = document.getElementById("resume").value.trim();
-    var info = document.getElementById("info").value.trim(); // optional
 
-    // Password validation: at least 6 chars and 1 special character
+    // Password validation
     var specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
     if (password.length < 6 || !specialCharRegex.test(password)) {
       alert("⚠️ Password must be at least 6 characters long and include at least one special character.");
       return;
     }
 
-    // Check mandatory fields
-    if (fullname && email && password && skills && course && resume) {
+    if (fullname && email && password && skills && course) {
+      var data = { fullname, email, password, skills, course };
 
-      //Prepare a data
-      var data = {
-        fullname:fullname,
-        email: email,
-        password: password,
-        skills: skills,
-        course: course,
-        resume: resume,
-        info: info
-      };
-
-      //send data to backend
       fetch("http://127.0.0.1:5000/register", {
-        method: "Post",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       })
       .then(response => response.json())
@@ -271,7 +242,7 @@
         console.error("Error:", error);
         alert("Something went wrong, Please try again!");
       });
-    } else{
+    } else {
       alert("Please fill in all required details before submitting!");
     }
   });
@@ -279,3 +250,4 @@
 
 </body>
 </html>
+
