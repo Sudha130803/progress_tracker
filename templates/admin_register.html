@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Register</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      text-align: center;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    nav {
+      background: #0f172a;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    nav .logo img {
+      width: 53px;
+      height: 40px;
+      margin-right: 8px;
+    }
+
+    nav .buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    nav .buttons button {
+      background: #e67e22 ;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav .buttons button:hover {
+      background: #f39c12;
+    }
+
+    .login-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #0f172a;
+    }
+
+
+    .login-box label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      transition: border 0.3s;
+      margin: 10px auto;
+    }
+
+    .login-box input:focus {
+      border-color: #38bdf8;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 0.9rem;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-box button:hover {
+      background: #1e293b;
+    }
+
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <span>GAINZ LOOP</span>
+    </div>
+
+    <div class="buttons">
+      <a href="/admin/register_page"><button type="button">Register</button></a>
+      <a href="/admin/login_page"><button type="button">Back</button></a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="login-box">
+      <h2>Admin Registration</h2>
+      <input type="text" id="fullname" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+
+      <div class="input-group" style="position: relative;">
+        <input type="password" id="password" placeholder="Password" required style="width: 100%; padding-right: 40px;"/>
+        <i id="togglePassword" class="fa-solid fa-eye" 
+            style="position:absolute; right:12px; top:33px; transform: translateY(-50%); cursor:pointer; font-size:18px; color:#333;"></i>
+      </div>
+
+      <button onclick="adminRegister()">Register</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = "http://127.0.0.1:5000";
+
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const passwordInput = document.getElementById("password");
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    })
+
+    function adminRegister() {
+      const fullname = document.getElementById("fullname").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      fetch(`${API_BASE_URL}/admin/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullname, email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);
+          window.location.href = "/admin/login_page";
+        } else if (data.error) {
+          alert(data.error);
+        }
+      })
+      .catch(err => {
+        console.error("Admin registration failed:", err);
+        alert("Registration failed, please try again.");
+      });
+    }
+  </script>
+</body>
+</html>

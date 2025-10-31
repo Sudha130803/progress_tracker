@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Registration - GAINZ LOOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -149,7 +150,7 @@
   <!-- Navbar -->
   <nav>
     <div class="logo">
-      <img src="logo.png" alt="Logo">
+      <img src="static\image\logo.png" alt="Logo">
       <span>GAINZ LOOP</span>
     </div>
   </nav>
@@ -170,9 +171,11 @@
             <input type="email" id="email" placeholder="Enter your email" required>
           </div>
 
-          <div class="input-group">
+          <div class="input-group" style="position: relative;" >
             <label for="password">Password</label>
             <input type="password" id="password" placeholder="Enter a strong password" required>
+            <i id="togglePassword" class="fa-solid fa-eye" 
+                  style="position:absolute; right:10px; top:40px; cursor:pointer; font-size:18px; color:#333;"></i>
           </div>
 
           <div class="input-group">
@@ -194,56 +197,67 @@
 
         <div class="actions">
           <button type="submit" id="register">Register</button>
-          <button type="button" id="back" onclick="window.location.href='login.html';">Back</button>
+          <button type="button" id="back" onclick="window.location.href='/login_page';">Back</button>
         </div>
       </form>
     </div>
   </div>
 
 <script>
-  var form = document.getElementById("regForm");
+  document.getElementById("togglePassword").addEventListener("click", function () {
+    const passwordInput = document.getElementById("password");
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
 
-  form.addEventListener("submit", function (event) {
+    this.classList.toggle("fa-eye");
+    this.classList.toggle("fa-eye-slash");
+  });
+
+
+  const form = document.getElementById("regForm");
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     // Collect values
-    var fullname = document.getElementById("fullname").value.trim();
-    var email = document.getElementById("email").value.trim();
-    var password = document.getElementById("password").value.trim();
-    var skills = document.getElementById("skills").value.trim();
-    var course = document.getElementById("course").value.trim();
+    const fullname = document.getElementById("fullname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const skills = document.getElementById("skills").value.trim();
+    const course = document.getElementById("course").value.trim();
 
     // Password validation
-    var specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
     if (password.length < 6 || !specialCharRegex.test(password)) {
       alert("⚠️ Password must be at least 6 characters long and include at least one special character.");
       return;
     }
 
-    if (fullname && email && password && skills && course) {
-      var data = { fullname, email, password, skills, course };
+    if (!fullname && !email && !password && !skills && !course) {
+      alert("Please fill in all required details before submitting!");
+      return;
+    }
+      
+    const data = { fullname, email, password, skills, course };
 
-      fetch("http://127.0.0.1:5000/register", {
+    try{
+        const res = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.message) {
-          alert(result.message);
-          form.reset();
-          window.location.href = "login.html";
-        } else {
-          alert("Something went wrong, please try again!");
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        alert("Something went wrong, Please try again!");
+        body: JSON.stringify(data),
+        credentials: "include"
       });
-    } else {
-      alert("Please fill in all required details before submitting!");
+
+      const payload = await res.json();
+
+      if (!res.ok){
+        throw new Error(payload.error || "Server error");
+      }
+      alert (payload.message || "Registration successfull");
+      window.location.href = "/login_page";
+    } catch (err) {
+      console.error("Register failed:", err);
+      alert(err.message || "Something went wrong");
     }
   });
 </script>

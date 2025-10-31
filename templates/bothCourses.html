@@ -169,9 +169,12 @@
   </div>
 
   <script>
-    // ===== Module Data =====
-    const courseData = {
-      technical: [
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentId = urlParams.get("id");
+  const API_BASE_URL = "http://127.0.0.1:5000";
+
+  const courseData = {
+    technical: [
         "Advanced Python",
         "Full Stack Web Development",
         "Data Science",
@@ -187,8 +190,8 @@
         "Salesforce",
         "Data Analysis (Excel, SPSS, Tableau, PowerBI)",
         "Medical Coding"
-      ],
-      corporate: [
+    ],
+    corporate: [
         "Business Analytics with Python & Excel",
         "FinTech & Blockchain Applications in Finance",
         "AI for Business Decision Making",
@@ -204,74 +207,98 @@
         "Cloud-based Accounting & ERP Tools",
         "Business Intelligence (BI) for Strategic Planning",
         "Sustainability & ESG Reporting Tools in Business"
-      ]
-    };
+    ]
+  };
 
-    // ===== Progress State =====
-    let progress = JSON.parse(localStorage.getItem("progressData")) || {
-      technical: { completed: 0, recent: [], last: "--" },
-      corporate: { completed: 0, recent: [], last: "--" }
-    };
+  let progress = {
+    technical: { completed: 0, recent: [], last: "--" },
+    corporate: { completed: 0, recent: [], last: "--" }
+  };
 
-    // ===== Update Dashboard =====
-    function updateDashboard() {
-      const techTotal = courseData.technical.length;
-      const corpTotal = courseData.corporate.length;
-      const totalModules = techTotal + corpTotal;
-      const completedModules = progress.technical.completed + progress.corporate.completed;
+  // ===== Fetch student progress from backend =====
+  function fetchStudentData() {
+    fetch(`${API_BASE_URL}/student/${studentId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
 
-      document.getElementById("totalCourses").innerText = "2";
-      document.getElementById("overallProgress").innerText = Math.round((completedModules / totalModules) * 100) + "%";
-      document.getElementById("completedModules").innerText = `${completedModules} of ${totalModules}`;
-      document.getElementById("lastActivity").innerText = progress.technical.last !== "--" ? progress.technical.last : progress.corporate.last;
+        // Map backend progress to frontend state
+        progress.technical.completed = data.progress.Technical || 0;
+        progress.corporate.completed = data.progress.Corporate || 0;
+        progress.technical.last = data.last_activity || "--";
+        progress.corporate.last = data.last_activity || "--";
 
-      // Technical Section
-      document.getElementById("techTotal").innerText = techTotal;
-      document.getElementById("techCompleted").innerText = progress.technical.completed;
-      document.getElementById("techFill").style.width = (progress.technical.completed / techTotal) * 100 + "%";
-      document.getElementById("techNext").innerText =
-        progress.technical.completed < techTotal ? courseData.technical[progress.technical.completed] : "All Done 🎉";
-      document.getElementById("techRecent").innerText =
-        progress.technical.recent.length > 0 ? progress.technical.recent.join(", ") : "--";
-
-      // Corporate Section
-      document.getElementById("corpTotal").innerText = corpTotal;
-      document.getElementById("corpCompleted").innerText = progress.corporate.completed;
-      document.getElementById("corpFill").style.width = (progress.corporate.completed / corpTotal) * 100 + "%";
-      document.getElementById("corpNext").innerText =
-        progress.corporate.completed < corpTotal ? courseData.corporate[progress.corporate.completed] : "All Done 🎉";
-      document.getElementById("corpRecent").innerText =
-        progress.corporate.recent.length > 0 ? progress.corporate.recent.join(", ") : "--";
-
-      localStorage.setItem("progressData", JSON.stringify(progress));
-    }
-
-    // ===== Mark Next Module =====
-    function markNext(type) {
-      const total = courseData[type].length;
-      if (progress[type].completed < total) {
-        const moduleName = courseData[type][progress[type].completed];
-        progress[type].completed++;
-        progress[type].last = moduleName;
-        progress[type].recent.unshift(moduleName);
-        if (progress[type].recent.length > 5) progress[type].recent.pop();
         updateDashboard();
-      } else {
-        alert(type.toUpperCase() + " modules are already completed!");
-      }
-    }
+      })
+      .catch(err => {
+        console.error("Error loading student:", err);
+        alert("Failed to load dashboard. Please check the server.");
+      });
+  }
 
-    // ===== Reset All =====
-    function resetData() {
-      progress = {
-        technical: { completed: 0, recent: [], last: "--" },
-        corporate: { completed: 0, recent: [], last: "--" }
-      };
-      updateDashboard();
-    }
+  // ===== Update Dashboard =====
+  function updateDashboard() {
+    const techTotal = courseData.technical.length;
+    const corpTotal = courseData.corporate.length;
+    const totalModules = techTotal + corpTotal;
+    const completedModules = progress.technical.completed + progress.corporate.completed;
 
-    // Init
-    updateDashboard();
-  </script>
+    document.getElementById("totalCourses").innerText = "2";
+    document.getElementById("overallProgress").innerText = Math.round((completedModules / totalModules) * 100) + "%";
+    document.getElementById("completedModules").innerText = `${completedModules} of ${totalModules}`;
+    document.getElementById("lastActivity").innerText = progress.technical.last !== "--" ? progress.technical.last : progress.corporate.last;
+
+    // Technical
+    document.getElementById("techTotal").innerText = techTotal;
+    document.getElementById("techCompleted").innerText = progress.technical.completed;
+    document.getElementById("techFill").style.width = (progress.technical.completed / techTotal) * 100 + "%";
+    document.getElementById("techNext").innerText =
+      progress.technical.completed < techTotal ? courseData.technical[progress.technical.completed] : "All Done 🎉";
+    document.getElementById("techRecent").innerText = "--"; // backend can later return history
+
+    // Corporate
+    document.getElementById("corpTotal").innerText = corpTotal;
+    document.getElementById("corpCompleted").innerText = progress.corporate.completed;
+    document.getElementById("corpFill").style.width = (progress.corporate.completed / corpTotal) * 100 + "%";
+    document.getElementById("corpNext").innerText =
+      progress.corporate.completed < corpTotal ? courseData.corporate[progress.corporate.completed] : "All Done 🎉";
+    document.getElementById("corpRecent").innerText = "--";
+  }
+
+  // ===== Mark Next Module =====
+  function markNext(type) {
+    fetch(`${API_BASE_URL}/student/${studentId}/update`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ course_type: type.charAt(0).toUpperCase() + type.slice(1), completed_modules: 1 })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          fetchStudentData(); // reload progress
+        } else if (data.error) {
+          alert(data.error);
+        }
+      })
+      .catch(err => {
+        console.error("Error updating:", err);
+        alert("Failed to update module.");
+      });
+  }
+
+  // ===== Reset All =====
+  function resetData() {
+    fetch(`${API_BASE_URL}/student/${studentId}/reset`, { method: "POST" })
+      .then(res => res.json())
+      .then(() => fetchStudentData());
+  }
+
+  // Init
+  fetchStudentData();
+</script>
+
 </body>
 </html>

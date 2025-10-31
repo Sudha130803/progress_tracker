@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Activity - {{ student[1] }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0px; }
+    h2 { margin-bottom: 15px; }
+    table {margin-right: 20px; margin-left: 20px; width: 95%; border-collapse: collapse; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; }
+    th { background: #007bff; color: #fff; }
+
+    body .content {
+      padding: 20px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    nav {
+      background: #222;
+      color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    nav .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    nav .buttons button {
+      margin-left: 10px;
+      padding: 8px 15px;
+      background: #ff5252;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    nav .buttons button:hover {
+      background: #ff3030;
+    }
+
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <img>
+      <span>GAINZ LOOP — Admin Dashboard</span>
+    </div>
+    <div class="buttons">
+      <a href="/admin/dashboard"><button type="button">Back</button></a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <h2>Activity for {{ student[1] }}</h2>
+    <p>Email: {{ student[2] }}</p>
+    <p>Course: {{ student[4] }}</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Course Type</th>
+        <th>Completed Modules</th>
+        <th>Last Activity</th>
+        <th>Recent Activity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in progress %}
+      <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

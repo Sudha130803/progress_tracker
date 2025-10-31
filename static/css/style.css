@@ -78,6 +78,7 @@ nav {
 
 .section {
     padding: 50px 10%;
+    scroll-margin-top: 70px;
 }
 
 .card-container {
